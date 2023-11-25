@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import users from './routes/users';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -11,20 +12,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 // ПАРСЕР ДАННЫХ
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send({
-    answer: 'GET запрос успешно реализован',
-  });
-});
-
-app.post('/', (req, res) => {
-  const { text } = req.body;
-  const answerText = `${text} вот что ты прислал ублюдок`;
-
-  res.send({
-    'answer-text': answerText,
-  });
-});
+// РОУТЕРЫ
+app.use('/users', users);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
