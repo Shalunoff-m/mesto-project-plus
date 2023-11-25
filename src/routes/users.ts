@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import findUser from '../controllers/users';
 
 const users = Router();
 
@@ -7,6 +8,8 @@ users.get('/', (req, res) => {
     answer: 'GET запрос успешно реализован',
   });
 });
+
+users.get('/:id', findUser);
 
 users.post('/', (req, res) => {
   const { text } = req.body;
