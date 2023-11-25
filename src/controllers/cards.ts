@@ -3,13 +3,19 @@ import Cards from '../models/cards';
 
 export const likeCard = (req: any, res: Response) => {
   const { _id } = req.user;
+  const { cardId } = req.params;
+
   Cards.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: _id } }, // добавить _id в массив, если его там нет
+    cardId,
+    { $addToSet: { likes: _id } },
     { new: true },
   ).then(((newCard) => {
     res.send(newCard);
-  }));
+  })).catch(() => {
+    res.send({
+      error: 'Что-то не получилось',
+    });
+  });
 };
 
 export const dislikeCard = (req: any, res: Response) => Cards.findByIdAndUpdate(
@@ -18,13 +24,14 @@ export const dislikeCard = (req: any, res: Response) => Cards.findByIdAndUpdate(
   { new: true },
 ).then(((newCard) => {
   res.send(newCard);
+  // [ ] Дописать обработчик ошибки
 }));
 
 export const deleteCard = (req:Request, res:Response) => {
-  // [x] Дописать контроллер
   const { cardId } = req.params;
   Cards.findByIdAndDelete(cardId).then(() => {
     res.send({ process: 'Успешно удалено' });
+    // [ ] Дописать обработчик ошибки
   });
 };
 
@@ -33,14 +40,13 @@ export const createCard = (req:any, res:Response) => {
   const { _id } = req.user;
   Cards.create({ ...data, owner: _id }).then((card) => {
     res.send(card);
+    // [ ] Дописать обработчик ошибки
   });
-  // [x] Дописать контроллер
-  /* В теле POST-запроса на создание карточки передайте JSON-объект с двумя полями: name и link. */
 };
 
 export const getAllCards = (req:Request, res:Response) => {
-  // [x] Дописать контроллер
   Cards.find({}).then((allCards) => {
     res.send(allCards);
+    // [ ] Дописать обработчик ошибки
   });
 };

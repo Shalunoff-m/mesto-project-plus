@@ -4,7 +4,7 @@ interface ICard{
   name: string,
   link: string,
   owner: mongoose.Types.ObjectId;
-  likes: number[],
+  likes: mongoose.Types.ObjectId[],
   createdAt: Date,
 }
 
@@ -25,7 +25,8 @@ const cardSchema = new mongoose.Schema<ICard>({
     required: true,
   },
   likes: [{
-    _id: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
   }],
   createdAt: {
     type: Date,

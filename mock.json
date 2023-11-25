@@ -1,0 +1,11 @@
+{
+  "user": {
+    "name": "name",
+    "about": "about",
+    "avatar": "avatar"
+  },
+  "cards": {
+    "name": "name",
+    "link": "link"
+  }
+}
