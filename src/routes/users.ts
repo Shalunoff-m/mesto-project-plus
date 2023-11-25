@@ -1,23 +1,10 @@
 import { Router } from 'express';
-import findUser from '../controllers/users';
+import { getUserById, getAllUsers, createUser } from '../controllers/users';
 
 const users = Router();
 
-users.get('/', (req, res) => {
-  res.send({
-    answer: 'GET запрос успешно реализован',
-  });
-});
-
-users.get('/:id', findUser);
-
-users.post('/', (req, res) => {
-  const { text } = req.body;
-  const answerText = `${text}, вот что ты прислал ублюдок`;
-
-  res.send({
-    'answer-text': answerText,
-  });
-});
+users.get('/', getAllUsers);
+users.get('/:id', getUserById);
+users.post('/', createUser);
 
 export default users;
