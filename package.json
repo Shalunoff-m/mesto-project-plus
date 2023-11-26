@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Backend часть проекта Mesto-API",
   "main": "dist/app.js",
-  "type": "module",
   "scripts": {
     "lint": "npx eslint src/**/*.ts",
     "build": "tsc",
