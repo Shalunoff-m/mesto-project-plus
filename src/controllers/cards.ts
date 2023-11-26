@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Cards from '../models/cards';
 import CustomError from '../helpers/customError';
+import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
 
 export const likeCard = (req: any, res: Response, next: NextFunction) => {
   const { _id } = req.user;
@@ -12,7 +13,7 @@ export const likeCard = (req: any, res: Response, next: NextFunction) => {
     { new: true },
   ).then(((newCard) => {
     if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
+      throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
     }
 
     res.send(newCard);
@@ -31,7 +32,7 @@ export const dislikeCard = (req: any, res: Response, next: NextFunction) => {
     { new: true },
   ).then(((newCard) => {
     if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
+      throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
     }
 
     res.send(newCard);
@@ -44,7 +45,7 @@ export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
   Cards.findByIdAndDelete(cardId).then((deletedCard) => {
     if (!deletedCard) {
-      throw new CustomError('Карточка не найдена', 404);
+      throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
     }
 
     res.send({ message: 'Успешно удалено' });
@@ -60,7 +61,7 @@ export const createCard = (req:any, res: Response, next: NextFunction) => {
     res.send(card);
   }).catch((err) => {
     if (err.name === 'ValidationError') {
-      next(new CustomError(`Ошибка валидации: ${err.message}`, 400));
+      next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
     } else {
       next(err);
     }

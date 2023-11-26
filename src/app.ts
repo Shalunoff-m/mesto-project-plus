@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
+import { STATUS_INTERNAL_SERVER_ERROR } from './helpers/status-code';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -31,7 +32,7 @@ app.use((err: any, req:Request, res: Response) => {
     res.status(err.statusCode).send({ message: err.message });
   }
 
-  res.status(500).send({ message: 'Судя по всему, какая-то ошибка сервера' });
+  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Судя по всему, какая-то ошибка сервера' });
 });
 
 app.listen(PORT, () => {

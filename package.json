@@ -1,5 +1,5 @@
 {
-  "name": "starterkits",
+  "name": "mesto-backend-server",
   "version": "1.0.0",
   "description": "Backend часть проекта Mesto-API",
   "main": "dist/app.js",
