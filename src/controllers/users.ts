@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
 import CustomError from '../helpers/customError';
 import Users from '../models/users';
@@ -42,18 +43,23 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
-  const data = req.body;
-  Users.create(data).then((user) => {
-    res.send(user);
-  }).catch((err) => {
-    if (err.name === 'ValidationError') {
-      next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
-    } else {
-      next(err);
-    }
+  //  [ ] Здесь нужен метод хеширования пароля
 
-    next(err);
-  });
+  const { password, ...data } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => Users.create({ ...data, password: hash })
+      .then((user) => {
+        res.send(user);
+      }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
+      } else {
+        next(err);
+      }
+
+      next(err);
+    });
 };
 
 export const updateUser = (req:any, res:Response, next:NextFunction) => {
