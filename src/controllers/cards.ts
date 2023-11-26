@@ -2,42 +2,39 @@ import { NextFunction, Request, Response } from 'express';
 import Cards from '../models/cards';
 import CustomError from '../helpers/customError';
 
+const updateCardLikes = (
+  cardId: string,
+  userId: string,
+  action: string,
+  res: Response,
+  next: NextFunction,
+) => {
+  const update = action === 'like'
+    ? { $addToSet: { likes: userId } }
+    : { $pull: { likes: userId } };
+
+  Cards.findByIdAndUpdate(cardId, update, { new: true })
+    .then((updatedCard) => {
+      if (!updatedCard) {
+        throw new CustomError('Карточка не найдена', 404);
+      }
+      res.send(updatedCard);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 export const likeCard = (req: any, res: Response, next: NextFunction) => {
   const { _id } = req.user;
   const { cardId } = req.params;
-
-  Cards.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: _id } },
-    { new: true },
-  ).then(((newCard) => {
-    if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
-    }
-
-    res.send(newCard);
-  })).catch((err) => {
-    next(err);
-  });
+  updateCardLikes(cardId, _id, 'like', res, next);
 };
 
 export const dislikeCard = (req: any, res: Response, next: NextFunction) => {
   const { _id } = req.user;
   const { cardId } = req.params;
-
-  Cards.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: _id } },
-    { new: true },
-  ).then(((newCard) => {
-    if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
-    }
-
-    res.send(newCard);
-  })).catch((err) => {
-    next(err);
-  });
+  updateCardLikes(cardId, _id, 'dislike', res, next);
 };
 
 export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
