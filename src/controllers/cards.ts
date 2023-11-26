@@ -24,14 +24,16 @@ export const dislikeCard = (req: any, res: Response) => Cards.findByIdAndUpdate(
   { new: true },
 ).then(((newCard) => {
   res.send(newCard);
-  // [ ] Дописать обработчик ошибки
-}));
+})).catch((err) => {
+  res.send({ error: err });
+});
 
 export const deleteCard = (req:Request, res:Response) => {
   const { cardId } = req.params;
   Cards.findByIdAndDelete(cardId).then(() => {
     res.send({ process: 'Успешно удалено' });
-    // [ ] Дописать обработчик ошибки
+  }).catch((err) => {
+    res.send({ error: err });
   });
 };
 
@@ -40,13 +42,15 @@ export const createCard = (req:any, res:Response) => {
   const { _id } = req.user;
   Cards.create({ ...data, owner: _id }).then((card) => {
     res.send(card);
-    // [ ] Дописать обработчик ошибки
+  }).catch((err) => {
+    res.send({ error: err });
   });
 };
 
 export const getAllCards = (req:Request, res:Response) => {
   Cards.find({}).then((allCards) => {
     res.send(allCards);
-    // [ ] Дописать обработчик ошибки
+  }).catch((err) => {
+    res.send({ error: err });
   });
 };
