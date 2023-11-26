@@ -1,12 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, Document } from 'mongoose';
 import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
-interface IUser{
+interface IUser extends Document{
   email: string,
   password: string,
   name: string,
   about: string,
   avatar: string,
+}
+
+interface IUserModel extends Model<IUser> {
+  findUserByCredentials(email: string, password: string): Promise<IUser>;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -50,4 +55,23 @@ const userSchema = new mongoose.Schema<IUser>({
   },
 });
 
-export default mongoose.model<IUser>('user', userSchema);
+userSchema.static('findUserByCredentials', function (email: string, password: string) {
+  return this.findOne({ email }) // `this` теперь корректно ссылается на схему
+    .then((user: IUser) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Неправильные почта или пароль'));
+          }
+
+          return user;
+        });
+    });
+});
+
+const UserModel: IUserModel = mongoose.model<IUser, IUserModel>('user', userSchema);
+export default UserModel;
