@@ -6,6 +6,7 @@ import CustomError from '../helpers/customError';
 import Users from '../models/users';
 
 const updateUserById = (userId:string, updateData:any, res:Response, next: NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   Users.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true })
     .then((updatedUser) => {
       if (!updatedUser) {
@@ -44,6 +45,7 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
+  // [ ] Здесь нужно сделать проверку, чтобы email был только уникальным
   const { password, ...data } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => Users.create({ ...data, password: hash })
@@ -89,6 +91,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const updateUser = (req:any, res:Response, next:NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { name, about } = req.body;
   if (!name || !about) {
@@ -99,6 +102,7 @@ export const updateUser = (req:any, res:Response, next:NextFunction) => {
 };
 
 export const updateAvatar = (req:any, res:Response, next:NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { avatar } = req.body;
 
@@ -107,4 +111,14 @@ export const updateAvatar = (req:any, res:Response, next:NextFunction) => {
   }
 
   updateUserById(_id, { avatar }, res, next);
+};
+
+export const getCurrentUser = (req:any, res:Response, next: NextFunction) => {
+  const { _id } = req.user;
+
+  Users.findById(_id).then((curUser) => {
+    res.send(curUser);
+  }).catch((err) => {
+    next(err);
+  });
 };

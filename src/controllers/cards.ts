@@ -27,18 +27,21 @@ const updateCardLikes = (
 };
 
 export const likeCard = (req: any, res: Response, next: NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { cardId } = req.params;
   updateCardLikes(cardId, _id, 'like', res, next);
 };
 
 export const dislikeCard = (req: any, res: Response, next: NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { cardId } = req.params;
   updateCardLikes(cardId, _id, 'dislike', res, next);
 };
 
 export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const { cardId } = req.params;
   Cards.findByIdAndDelete(cardId).then((deletedCard) => {
     if (!deletedCard) {
@@ -52,6 +55,7 @@ export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
 };
 
 export const createCard = (req:any, res: Response, next: NextFunction) => {
+  // [ ] Здесь нужно достать пользователя
   const data = req.body;
   const { _id } = req.user;
   Cards.create({ ...data, owner: _id }).then((card) => {
