@@ -43,7 +43,7 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
-  //  [ ] Здесь нужен метод хеширования пароля
+  //  [x] Здесь нужен метод хеширования пароля
 
   const { password, ...data } = req.body;
   bcrypt.hash(password, 10)
@@ -59,6 +59,34 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
       }
 
       next(err);
+    });
+};
+
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  // [ ] Прописывает метод авторизации
+  const { email, password } = req.body;
+
+  return Users.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new CustomError('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    }).then((matched) => {
+      if (!matched) {
+        return Promise.reject(new CustomError('Неправильные почта или пароль'));
+      }
+
+      res.send({ message: 'Всё верно!' });
+      return undefined;
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new CustomError(`Ошибка валидации: ${err.message}`, 400));
+      } else {
+        next(err);
+      }
     });
 };
 
