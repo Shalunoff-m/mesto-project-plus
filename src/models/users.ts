@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema<IUser>({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   name: {
     type: String,
@@ -56,7 +57,7 @@ const userSchema = new mongoose.Schema<IUser>({
 });
 
 userSchema.static('findUserByCredentials', function (email: string, password: string) {
-  return this.findOne({ email }) // `this` теперь корректно ссылается на схему
+  return this.findOne({ email }).select('+password')
     .then((user: IUser) => {
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));

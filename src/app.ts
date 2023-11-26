@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import CustomError from './helpers/customError';
@@ -24,14 +24,6 @@ if (DB_URI) {
 
 // MIDDLEWARES ----------------------------------------------
 app.use(express.json());
-
-app.use((req: any, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '65632e242f7a6635a7129675',
-  };
-
-  next();
-});
 
 // РОУТЕРЫ
 app.use('/users', users);

@@ -27,35 +27,37 @@ const updateCardLikes = (
 };
 
 export const likeCard = (req: any, res: Response, next: NextFunction) => {
-  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { cardId } = req.params;
   updateCardLikes(cardId, _id, 'like', res, next);
 };
 
 export const dislikeCard = (req: any, res: Response, next: NextFunction) => {
-  // [ ] Здесь нужно достать пользователя
   const { _id } = req.user;
   const { cardId } = req.params;
   updateCardLikes(cardId, _id, 'dislike', res, next);
 };
 
-export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
-  // [ ] Здесь нужно достать пользователя
+export const deleteCard = (req:any, res: Response, next: NextFunction) => {
+  const { _id } = req.user;
   const { cardId } = req.params;
-  Cards.findByIdAndDelete(cardId).then((deletedCard) => {
-    if (!deletedCard) {
-      throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
-    }
 
-    res.send({ message: 'Успешно удалено' });
+  Cards.findById(cardId).then((findenCard) => {
+    if (findenCard) {
+      if (findenCard.owner.toString() === _id) {
+        Cards.findByIdAndDelete(cardId).then(() => {
+          res.send({ message: 'Успешно удалено' });
+        });
+      } else {
+        throw new CustomError('Вы не владелец карточки', STATUS_BAD_REQUEST);
+      }
+    } else { throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND); }
   }).catch((err) => {
     next(err);
   });
 };
 
 export const createCard = (req:any, res: Response, next: NextFunction) => {
-  // [ ] Здесь нужно достать пользователя
   const data = req.body;
   const { _id } = req.user;
   Cards.create({ ...data, owner: _id }).then((card) => {
