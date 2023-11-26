@@ -63,7 +63,7 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-  // [ ] Прописывает метод авторизации
+  // [ ] Нужно дописать отправку токена
   const { email, password } = req.body;
 
   return Users.findOne({ email })

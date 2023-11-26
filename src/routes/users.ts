@@ -7,9 +7,9 @@ const users = Router();
 
 users.get('/', getAllUsers);
 users.get('/:id', getUserById);
-users.post('/', createUser);
+users.post('/signup', createUser);
+users.post('/signin', login);
 users.patch('/me', updateUser);
 users.patch('/me/avatar', updateAvatar);
-users.post('/signin', login);
 
 export default users;
