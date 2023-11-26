@@ -1,50 +1,48 @@
 import { NextFunction, Request, Response } from 'express';
 import Cards from '../models/cards';
 import CustomError from '../helpers/customError';
+import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
+
+const updateCardLikes = (
+  cardId: string,
+  userId: string,
+  action: string,
+  res: Response,
+  next: NextFunction,
+) => {
+  const update = action === 'like'
+    ? { $addToSet: { likes: userId } }
+    : { $pull: { likes: userId } };
+
+  Cards.findByIdAndUpdate(cardId, update, { new: true })
+    .then((updatedCard) => {
+      if (!updatedCard) {
+        throw new CustomError('Карточка не найдена', 404);
+      }
+      res.send(updatedCard);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 export const likeCard = (req: any, res: Response, next: NextFunction) => {
   const { _id } = req.user;
   const { cardId } = req.params;
-
-  Cards.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: _id } },
-    { new: true },
-  ).then(((newCard) => {
-    if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
-    }
-
-    res.send(newCard);
-  })).catch((err) => {
-    next(err);
-  });
+  updateCardLikes(cardId, _id, 'like', res, next);
 };
 
 export const dislikeCard = (req: any, res: Response, next: NextFunction) => {
   const { _id } = req.user;
   const { cardId } = req.params;
-
-  Cards.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: _id } },
-    { new: true },
-  ).then(((newCard) => {
-    if (!newCard) {
-      throw new CustomError('Карточка не найдена', 404);
-    }
-
-    res.send(newCard);
-  })).catch((err) => {
-    next(err);
-  });
+  updateCardLikes(cardId, _id, 'dislike', res, next);
 };
 
 export const deleteCard = (req:Request, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
   Cards.findByIdAndDelete(cardId).then((deletedCard) => {
     if (!deletedCard) {
-      throw new CustomError('Карточка не найдена', 404);
+      throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
     }
 
     res.send({ message: 'Успешно удалено' });
@@ -60,7 +58,7 @@ export const createCard = (req:any, res: Response, next: NextFunction) => {
     res.send(card);
   }).catch((err) => {
     if (err.name === 'ValidationError') {
-      next(new CustomError(`Ошибка валидации: ${err.message}`, 400));
+      next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
     } else {
       next(err);
     }

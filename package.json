@@ -1,5 +1,5 @@
 {
-  "name": "starterkits",
+  "name": "mesto-backend-server",
   "version": "1.0.0",
   "description": "Backend часть проекта Mesto-API",
   "main": "dist/app.js",
@@ -28,7 +28,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@types/validator": "^13.11.7",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongoose": "^6.5.0",
     "validator": "^13.11.0"

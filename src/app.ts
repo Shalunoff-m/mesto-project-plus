@@ -1,21 +1,33 @@
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
+import { STATUS_INTERNAL_SERVER_ERROR } from './helpers/status-code';
 
-const { PORT = 3000 } = process.env;
+dotenv.config();
+
+const { PORT = 3000, DB_URI } = process.env;
 const app = express();
 
 // ПОДКЛЮЧАЕМСЯ К БАЗЕ ДАННЫХ
-mongoose.connect('mongodb://localhost:27017/mestodb');
+if (DB_URI) {
+  mongoose.connect(DB_URI).then(() => {
+    console.log('Database connected successfully!');
+  }).catch((err) => {
+    console.log('Database connected error', err);
+  });
+} else {
+  console.log('Database connected error');
+}
 
 // MIDDLEWARES ----------------------------------------------
 app.use(express.json());
 
 app.use((req: any, res: Response, next: NextFunction) => {
   req.user = {
-    _id: '656248255bb6a1a102d01fd1',
+    _id: '65632e242f7a6635a7129675',
   };
 
   next();
@@ -31,7 +43,7 @@ app.use((err: any, req:Request, res: Response) => {
     res.status(err.statusCode).send({ message: err.message });
   }
 
-  res.status(500).send({ message: 'Судя по всему, какая-то ошибка сервера' });
+  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
 });
 
 app.listen(PORT, () => {
