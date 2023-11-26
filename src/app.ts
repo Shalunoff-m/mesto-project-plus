@@ -1,14 +1,25 @@
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
 
-const { PORT = 3000 } = process.env;
+dotenv.config();
+
+const { PORT = 3000, DB_URI } = process.env;
 const app = express();
 
 // ПОДКЛЮЧАЕМСЯ К БАЗЕ ДАННЫХ
-mongoose.connect('mongodb://localhost:27017/mestodb');
+if (DB_URI) {
+  mongoose.connect(DB_URI).then(() => {
+    console.log('Database connected successfully!');
+  }).catch((err) => {
+    console.log('Database connected error', err);
+  });
+} else {
+  console.log('Database connected error');
+}
 
 // MIDDLEWARES ----------------------------------------------
 app.use(express.json());
