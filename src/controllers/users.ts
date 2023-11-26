@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
 import CustomError from '../helpers/customError';
 import Users from '../models/users';
@@ -43,8 +44,6 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
-  //  [x] Здесь нужен метод хеширования пароля
-
   const { password, ...data } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => Users.create({ ...data, password: hash })
@@ -63,11 +62,21 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-  // [ ] Нужно дописать отправку токена
   const { email, password } = req.body;
 
   return Users.findUserByCredentials(email, password)
     .then((user) => {
+      const token = jwt.sign({ _id: user._id }, `${process.env.JWT_SECRET}`, {
+        expiresIn: '7d',
+      });
+
+      // Устанавливаем куку
+      res
+        .cookie('jwt', token, {
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
+
       res.send({ message: 'Всё верно!' });
     })
     .catch((err) => {
