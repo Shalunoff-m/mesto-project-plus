@@ -42,7 +42,7 @@ app.use((err: any, req:Request, res: Response) => {
     res.status(err.statusCode).send({ message: err.message });
   }
 
-  res.status(500).send({ message: 'Судя по всему, какая-то ошибка сервера' });
+  res.status(500).send({ message: 'На сервере произошла ошибка' });
 });
 
 app.listen(PORT, () => {
