@@ -13,7 +13,7 @@ interface IUser extends Document{
 }
 
 interface IUserModel extends Model<IUser> {
-  findUserByCredentials(): Promise<IUser>;
+  findUserByCredentials(email:string, password:string): Promise<IUser>;
 }
 
 const userSchema = new mongoose.Schema<IUser>({

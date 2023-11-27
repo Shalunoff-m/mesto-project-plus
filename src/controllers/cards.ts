@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Cards from '../models/cards';
 import CustomError from '../helpers/customError';
-import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
+import { STATUS_BAD_REQUEST, STATUS_NOT_ENOUGH_RIGHTS, STATUS_NOT_FOUND } from '../helpers/status-code';
 
 const updateCardLikes = (
   cardId: string,
@@ -17,7 +17,7 @@ const updateCardLikes = (
   Cards.findByIdAndUpdate(cardId, update, { new: true })
     .then((updatedCard) => {
       if (!updatedCard) {
-        throw new CustomError('Карточка не найдена', 404);
+        throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
       }
       res.send(updatedCard);
     })
@@ -49,7 +49,7 @@ export const deleteCard = (req:any, res: Response, next: NextFunction) => {
           res.send({ message: 'Успешно удалено' });
         });
       } else {
-        throw new CustomError('Вы не владелец карточки', STATUS_BAD_REQUEST);
+        throw new CustomError('Вы не владелец карточки', STATUS_NOT_ENOUGH_RIGHTS);
       }
     } else { throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND); }
   }).catch((err) => {

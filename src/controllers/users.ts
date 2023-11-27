@@ -9,13 +9,13 @@ const updateUserById = (userId:string, updateData:any, res:Response, next: NextF
   Users.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true })
     .then((updatedUser) => {
       if (!updatedUser) {
-        throw new CustomError('Пользователь не найден', 404);
+        throw new CustomError('Пользователь не найден', STATUS_NOT_FOUND);
       }
       res.send(updatedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new CustomError(`Ошибка валидации: ${err.message}`, 400));
+        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
       } else {
         next(err);
       }
@@ -82,7 +82,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new CustomError(`Ошибка валидации: ${err.message}`, 400));
+        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
       } else {
         next(err);
       }
