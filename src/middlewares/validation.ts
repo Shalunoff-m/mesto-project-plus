@@ -1,4 +1,5 @@
 import { celebrate, Joi } from 'celebrate';
+import avatarUrlRegex from '../helpers/regex';
 
 export const createUserValidation = celebrate({
   body: Joi.object().keys({
@@ -23,8 +24,9 @@ export const createUserValidation = celebrate({
         'string.min': '"about" должно быть минимум 2 символа',
         'string.max': '"about" не должно превышать 200 символов',
       }),
-    avatar: Joi.string().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
+    avatar: Joi.string().pattern(avatarUrlRegex).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
       'string.base': '"avatar" должно быть строкой',
+      'string.pattern': '"avatar" не является корректной ссылкой',
     }),
   }),
 });
@@ -72,9 +74,9 @@ export const UserGetValidation = celebrate({
 
 export const updateUserAvatarValidation = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
+    avatar: Joi.string().pattern(avatarUrlRegex).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
       'string.base': '"avatar" должно быть строкой',
-      'string.uri': '"avatar" должно быть действительной ссылкой на изображение',
+      'string.pattern': '"avatar" не является корректной ссылкой',
     }),
   }),
 });

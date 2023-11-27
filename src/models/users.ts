@@ -1,8 +1,7 @@
 import mongoose, { Model, Document } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-
-const avatarUrlRegex = /^(https?:\/\/)((www\.)[\w-]+\.[\w-]{2,}|(?!www)[\w-]+\.[\w-]{2,})([/\w._~:?#[\]@!$&'()*+,;=]*)*#?$/i;
+import avatarUrlRegex from '../helpers/regex';
 
 interface IUser extends Document{
   email: string,
@@ -50,12 +49,6 @@ const userSchema = new mongoose.Schema<IUser>({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validate: {
-      validator(url:any) {
-        return avatarUrlRegex.test(url);
-      },
-      message: (props) => `${props.value} не является ссылкой на изображение`,
-    },
   },
 });
 
