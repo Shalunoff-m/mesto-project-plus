@@ -48,7 +48,13 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(password, 10)
     .then((hash) => Users.create({ ...data, password: hash })
       .then((user) => {
-        res.send(user);
+        const {
+          name, about, avatar, email,
+        } = user;
+
+        res.send({
+          name, about, avatar, email,
+        });
       }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
