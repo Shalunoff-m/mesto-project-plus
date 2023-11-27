@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { errors } from 'celebrate';
 import cookieParser from 'cookie-parser';
+import basePath from './routes/base';
 import users from './routes/users';
 import cards from './routes/cards';
 import { requestLogger, errorLogger } from './middlewares/logger';
@@ -31,6 +32,7 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 // РОУТЕРЫ
+app.use('/', basePath);
 app.use('/users', users);
 app.use('/cards', cards);
 

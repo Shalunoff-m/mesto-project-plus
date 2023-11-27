@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getUserById, getAllUsers, createUser, updateUser, updateAvatar, login, getCurrentUser,
+  getUserById, getAllUsers, updateUser, updateAvatar, getCurrentUser,
 } from '../controllers/users';
 import auth from '../middlewares/auth';
 import {
@@ -12,9 +12,6 @@ import {
 } from '../middlewares/validation';
 
 const users = Router();
-
-users.post('/signup', createUserValidation, createUser);
-users.post('/signin', loginValidation, login);
 
 // МАРШРУТЫ С АВТОРИЗАЦИЕЙ
 users.get('/', auth, getAllUsers);

@@ -1,6 +1,7 @@
 import mongoose, { Model, Document } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import { NotFoundError } from '../helpers/customError';
 import avatarUrlRegex from '../helpers/regex';
 
 interface IUser extends Document{
@@ -49,6 +50,12 @@ const userSchema = new mongoose.Schema<IUser>({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator(v:string) {
+        return validator.isURL(v);
+      },
+      message: (props) => `${props.value} is not a valid URL!`,
+    },
   },
 });
 
@@ -62,7 +69,7 @@ userSchema.static('findUserByCredentials', function (email: string, password: st
   return this.findOne({ email }).select('+password')
     .then((user: IUser) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new NotFoundError('Неправильные почта или пароль'));
       }
 
       return bcrypt.compare(password, user.password)
