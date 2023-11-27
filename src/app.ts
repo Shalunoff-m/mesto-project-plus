@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { errors } from 'celebrate';
+import cookieParser from 'cookie-parser';
 import users from './routes/users';
 import cards from './routes/cards';
 import { requestLogger, errorLogger } from './middlewares/logger';
@@ -26,6 +27,7 @@ if (DB_URI) {
 
 // MIDDLEWARES ----------------------------------------------
 app.use(express.json());
+app.use(cookieParser());
 app.use(requestLogger);
 
 // РОУТЕРЫ
