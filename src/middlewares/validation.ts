@@ -23,9 +23,8 @@ export const createUserValidation = celebrate({
         'string.min': '"about" должно быть минимум 2 символа',
         'string.max': '"about" не должно превышать 200 символов',
       }),
-    avatar: Joi.string().uri().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
+    avatar: Joi.string().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
       'string.base': '"avatar" должно быть строкой',
-      'string.uri': '"avatar" должно быть действительной ссылкой на изображение',
     }),
   }),
 });
@@ -88,8 +87,8 @@ export const createCardValidation = celebrate({
       'string.max': '"name" не должно превышать 30 символов',
     }),
     link: Joi.string().uri().messages({
-      'string.base': '"avatar" должно быть строкой',
-      'string.uri': '"avatar" должно быть действительной ссылкой на изображение',
+      'string.base': '"link" должно быть строкой',
+      'string.uri': '"link" должно быть действительной ссылкой на изображение',
     }),
   }),
 });
