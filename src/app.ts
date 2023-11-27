@@ -5,6 +5,7 @@ import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
 import { STATUS_INTERNAL_SERVER_ERROR } from './helpers/status-code';
+import { requestLogger, errorLogger } from './middlewares/logger';
 
 dotenv.config();
 
@@ -24,10 +25,14 @@ if (DB_URI) {
 
 // MIDDLEWARES ----------------------------------------------
 app.use(express.json());
+app.use(requestLogger);
 
 // РОУТЕРЫ
 app.use('/users', users);
 app.use('/cards', cards);
+
+// ЛОГЕР ОШИБОК
+app.use(errorLogger);
 
 // ОБРАБОТЧИК ОШИБОК
 app.use((err: any, req:Request, res: Response) => {
