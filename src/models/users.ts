@@ -14,7 +14,7 @@ interface IUser extends Document{
 }
 
 interface IUserModel extends Model<IUser> {
-  findUserByCredentials(email:string, password:string): Promise<IUser>;
+  findUserByCredentials(this: Model<IUser>, email:string, password:string): Promise<IUser>;
   toObject(): Record<string, any>
 }
 
@@ -59,29 +59,33 @@ const userSchema = new mongoose.Schema<IUser>({
   },
 });
 
-userSchema.method('toJSON', function (this: IUser) {
+function toJSONWithRemovedPassword(this: IUser) {
   const obj = this.toObject();
   delete obj.password;
   return obj;
-});
+}
 
-userSchema.static('findUserByCredentials', function (email: string, password: string) {
-  return this.findOne({ email }).select('+password')
-    .then((user: IUser) => {
-      if (!user) {
-        return Promise.reject(new NotFoundError('Неправильные почта или пароль'));
-      }
+userSchema.method('toJSON', toJSONWithRemovedPassword);
 
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
-          }
+async function findUserByCredentials(
+  this: Model<IUser>,
+  email: string,
+  password: string,
+): Promise<IUser> {
+  const user = await this.findOne({ email }).select('+password');
+  if (!user) {
+    throw new NotFoundError('Неправильные почта или пароль');
+  }
 
-          return user;
-        });
-    });
-});
+  const matched = await bcrypt.compare(password, user.password);
+  if (!matched) {
+    throw new Error('Неправильные почта или пароль');
+  }
+
+  return user;
+}
+
+userSchema.static('findUserByCredentials', findUserByCredentials);
 
 const UserModel: IUserModel = mongoose.model<IUser, IUserModel>('user', userSchema);
 export default UserModel;
