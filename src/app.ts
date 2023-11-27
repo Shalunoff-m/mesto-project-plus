@@ -9,8 +9,10 @@ import { STATUS_INTERNAL_SERVER_ERROR } from './helpers/status-code';
 import { requestLogger, errorLogger } from './middlewares/logger';
 
 dotenv.config();
+// Дефолтные настройки порта и базы
+const PORT = 3000;
+const DB_URI = 'mongodb://localhost:27017/mestodb';
 
-const { PORT = 3000, DB_URI } = process.env;
 const app = express();
 
 // ПОДКЛЮЧАЕМСЯ К БАЗЕ ДАННЫХ
