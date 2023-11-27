@@ -7,6 +7,7 @@ import basePath from './routes/base';
 import users from './routes/users';
 import cards from './routes/cards';
 import { requestLogger, errorLogger } from './middlewares/logger';
+import { NotFoundError } from './helpers/customError';
 
 dotenv.config();
 // Дефолтные настройки порта и базы
@@ -35,6 +36,9 @@ app.use(requestLogger);
 app.use('/', basePath);
 app.use('/users', users);
 app.use('/cards', cards);
+app.use((req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 
 // ЛОГЕР ОШИБОК
 app.use(errorLogger);
