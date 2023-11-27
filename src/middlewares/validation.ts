@@ -63,7 +63,11 @@ export const updateUserValidation = celebrate({
 
 export const UserGetValidation = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().alphanum().length(24).messages({
+      'string.base': '"cardId" должен быть строкой',
+      'string.alphanum': '"cardId" неверный формат идентификатора',
+      'string.length': '"cardId" не соответствует длине',
+    }),
   }),
 });
 
@@ -72,6 +76,40 @@ export const updateUserAvatarValidation = celebrate({
     avatar: Joi.string().uri().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png').messages({
       'string.base': '"avatar" должно быть строкой',
       'string.uri': '"avatar" должно быть действительной ссылкой на изображение',
+    }),
+  }),
+});
+
+export const createCardValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).messages({
+      'string.base': '"name" должно быть строкой',
+      'string.min': '"name" должно быть минимум 2 символа',
+      'string.max': '"name" не должно превышать 30 символов',
+    }),
+    link: Joi.string().uri().messages({
+      'string.base': '"avatar" должно быть строкой',
+      'string.uri': '"avatar" должно быть действительной ссылкой на изображение',
+    }),
+  }),
+});
+
+export const deleteCardValidation = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24).messages({
+      'string.base': '"cardId" должен быть строкой',
+      'string.alphanum': '"cardId" неверный формат идентификатора',
+      'string.length': '"cardId" не соответствует длине',
+    }),
+  }),
+});
+
+export const likeDislikeCardValidation = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24).messages({
+      'string.base': '"cardId" должен быть строкой',
+      'string.alphanum': '"cardId" неверный формат идентификатора',
+      'string.length': '"cardId" не соответствует длине',
     }),
   }),
 });

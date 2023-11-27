@@ -3,21 +3,22 @@ import {
   createCard, deleteCard, dislikeCard, getAllCards, likeCard,
 } from '../controllers/cards';
 import auth from '../middlewares/auth';
+import { createCardValidation, deleteCardValidation, likeDislikeCardValidation } from '../middlewares/validation';
 
 const cards = Router();
 
 cards.get('/', auth, getAllCards);
 
-// [ ] Нужна валидация на name, link
-cards.post('/', auth, createCard);
+// [x] Нужна валидация на name, link
+cards.post('/', auth, createCardValidation, createCard);
 
-// [ ] Нужна валидация на id/params
-cards.delete('/:cardId', auth, deleteCard);
+// [x] Нужна валидация на id/params
+cards.delete('/:cardId', auth, deleteCardValidation, deleteCard);
 
-// [ ] Нужна валидация на id/params
-cards.put('/:cardId/likes', auth, likeCard);
+// [x] Нужна валидация на id/params
+cards.put('/:cardId/likes', auth, likeDislikeCardValidation, likeCard);
 
-// [ ] Нужна валидация на id/params
-cards.delete('/:cardId/likes', auth, dislikeCard);
+// [x] Нужна валидация на id/params
+cards.delete('/:cardId/likes', auth, likeDislikeCardValidation, dislikeCard);
 
 export default cards;
