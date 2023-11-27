@@ -23,8 +23,8 @@ const updateUserById = (userId:string, updateData:any, res:Response, next: NextF
 };
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params;
-  Users.findById(id).then((user) => {
+  const { userId } = req.params;
+  Users.findById(userId).then((user) => {
     if (!user) {
       throw new CustomError('Такого пользователя нет', STATUS_NOT_FOUND);
     }
