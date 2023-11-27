@@ -78,13 +78,13 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       });
 
       // Устанавливаем куку
-      res
-        .cookie('jwt', token, {
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-          httpOnly: true,
-        });
+      // res
+      //   .cookie('jwt', token, {
+      //     maxAge: 7 * 24 * 60 * 60 * 1000,
+      //     httpOnly: true,
+      //   });
 
-      res.send({ message: 'Всё верно!' });
+      res.send({ token });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
