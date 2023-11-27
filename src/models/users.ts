@@ -10,10 +10,12 @@ interface IUser extends Document{
   name: string,
   about: string,
   avatar: string,
+
 }
 
 interface IUserModel extends Model<IUser> {
   findUserByCredentials(email:string, password:string): Promise<IUser>;
+  toObject(): Record<string, any>
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -55,6 +57,12 @@ const userSchema = new mongoose.Schema<IUser>({
       message: (props) => `${props.value} не является ссылкой на изображение`,
     },
   },
+});
+
+userSchema.method('toJSON', function (this: IUser) {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 });
 
 userSchema.static('findUserByCredentials', function (email: string, password: string) {

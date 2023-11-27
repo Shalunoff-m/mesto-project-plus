@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Cards from '../models/cards';
-import CustomError from '../helpers/customError';
-import { STATUS_BAD_REQUEST, STATUS_NOT_ENOUGH_RIGHTS, STATUS_NOT_FOUND } from '../helpers/status-code';
+import { BadRequestError, NotEnoughRightsError, NotFoundError } from '../helpers/customError';
 
 const updateCardLikes = (
   cardId: string,
@@ -17,7 +16,7 @@ const updateCardLikes = (
   Cards.findByIdAndUpdate(cardId, update, { new: true })
     .then((updatedCard) => {
       if (!updatedCard) {
-        throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND);
+        throw new NotFoundError('Карточка не найдена');
       }
       res.send(updatedCard);
     })
@@ -49,9 +48,9 @@ export const deleteCard = (req:any, res: Response, next: NextFunction) => {
           res.send({ message: 'Успешно удалено' });
         });
       } else {
-        throw new CustomError('Вы не владелец карточки', STATUS_NOT_ENOUGH_RIGHTS);
+        throw new NotEnoughRightsError('Вы не владелец карточки');
       }
-    } else { throw new CustomError('Карточка не найдена', STATUS_NOT_FOUND); }
+    } else { throw new NotFoundError('Карточка не найдена'); }
   }).catch((err) => {
     next(err);
   });
@@ -64,7 +63,7 @@ export const createCard = (req:any, res: Response, next: NextFunction) => {
     res.send(card);
   }).catch((err) => {
     if (err.name === 'ValidationError') {
-      next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
+      next(new BadRequestError(`Ошибка валидации: ${err.message}`));
     } else {
       next(err);
     }

@@ -1,11 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { errors } from 'celebrate';
-import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
-import { STATUS_INTERNAL_SERVER_ERROR } from './helpers/status-code';
 import { requestLogger, errorLogger } from './middlewares/logger';
 
 dotenv.config();
@@ -42,12 +40,8 @@ app.use(errorLogger);
 app.use(errors());
 
 // ЦЕНТРАЛЬНЫЙ ОБРАБОТЧИК
-app.use((err: any, req:Request, res: Response) => {
-  if (err instanceof CustomError) {
-    res.status(err.statusCode).send({ message: err.message });
-  }
-
-  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+app.use((err: any, req:Request, res: Response, next: NextFunction) => {
+  res.status(err.statusCode).send({ message: err.message });
 });
 
 app.listen(PORT, () => {

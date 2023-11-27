@@ -1,21 +1,22 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { BadRequestError, NotFoundError, UserExistError } from '../helpers/customError';
 import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND, STATUS_USER_EXIST } from '../helpers/status-code';
-import CustomError from '../helpers/customError';
 import Users from '../models/users';
+import { JWT_SECRET } from '../middlewares/auth';
 
 const updateUserById = (userId:string, updateData:any, res:Response, next: NextFunction) => {
   Users.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true })
     .then((updatedUser) => {
       if (!updatedUser) {
-        throw new CustomError('Пользователь не найден', STATUS_NOT_FOUND);
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(updatedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
+        next(new BadRequestError(`Ошибка валидации: ${err.message}`));
       } else {
         next(err);
       }
@@ -26,7 +27,7 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
   const { userId } = req.params;
   Users.findById(userId).then((user) => {
     if (!user) {
-      throw new CustomError('Такого пользователя нет', STATUS_NOT_FOUND);
+      throw new NotFoundError('Такого пользователя нет');
     }
 
     res.send(user);
@@ -48,20 +49,14 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(password, 10)
     .then((hash) => Users.create({ ...data, password: hash })
       .then((user) => {
-        const {
-          name, about, avatar, email,
-        } = user;
-
-        res.send({
-          name, about, avatar, email,
-        });
+        res.send(user);
       }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
+        next(new BadRequestError(`Ошибка валидации: ${err.message}`));
       }
       if (err.code === 11000) {
-        next(new CustomError(`Такой пользователь уже зарегистрирован: ${err.message}`, STATUS_USER_EXIST));
+        next(new UserExistError(`Такой пользователь уже зарегистрирован: ${err.message}`));
       }
 
       next(err);
@@ -73,22 +68,22 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
 
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, `${process.env.JWT_SECRET}`, {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: '7d',
       });
 
       // Устанавливаем куку
-      // res
-      //   .cookie('jwt', token, {
-      //     maxAge: 7 * 24 * 60 * 60 * 1000,
-      //     httpOnly: true,
-      //   });
+      res
+        .cookie('jwt', token, {
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
 
       res.send({ token });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
+        next(new BadRequestError(`Ошибка валидации: ${err.message}`));
       } else {
         next(err);
       }
@@ -99,7 +94,7 @@ export const updateUser = (req:any, res:Response, next:NextFunction) => {
   const { _id } = req.user;
   const { name, about } = req.body;
   if (!name || !about) {
-    throw new CustomError('Введены не все данные', STATUS_BAD_REQUEST);
+    throw new BadRequestError('Введены не все данные');
   }
 
   updateUserById(_id, { name, about }, res, next);
@@ -110,7 +105,7 @@ export const updateAvatar = (req:any, res:Response, next:NextFunction) => {
   const { avatar } = req.body;
 
   if (!avatar) {
-    throw new CustomError('Нет данных для обновления', STATUS_BAD_REQUEST);
+    throw new BadRequestError('Нет данных для обновления');
   }
 
   updateUserById(_id, { avatar }, res, next);
