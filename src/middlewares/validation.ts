@@ -88,9 +88,9 @@ export const createCardValidation = celebrate({
       'string.min': '"name" должно быть минимум 2 символа',
       'string.max': '"name" не должно превышать 30 символов',
     }),
-    link: Joi.string().uri().messages({
+    link: Joi.string().pattern(avatarUrlRegex).messages({
       'string.base': '"link" должно быть строкой',
-      'string.uri': '"link" должно быть действительной ссылкой на изображение',
+      'string.pattern': '"link" не является корректной ссылкой',
     }),
   }),
 });
