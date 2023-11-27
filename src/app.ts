@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { errors } from 'celebrate';
 import CustomError from './helpers/customError';
 import users from './routes/users';
 import cards from './routes/cards';
@@ -34,7 +35,11 @@ app.use('/cards', cards);
 // ЛОГЕР ОШИБОК
 app.use(errorLogger);
 
-// ОБРАБОТЧИК ОШИБОК
+// ОБРАБОТЧИКИ ОШИБОК----------------------------------------
+// ОБРАБОТЧИК CELEBRATE
+app.use(errors());
+
+// ЦЕНТРАЛЬНЫЙ ОБРАБОТЧИК
 app.use((err: any, req:Request, res: Response) => {
   if (err instanceof CustomError) {
     res.status(err.statusCode).send({ message: err.message });
