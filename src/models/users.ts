@@ -17,8 +17,8 @@ interface IUserModel extends Model<IUser> {
 const userSchema = new mongoose.Schema<IUser>({
   email: {
     type: String,
-    required: true,
     unique: true,
+    required: true,
     validate: {
       validator(email:string) {
         return validator.isEmail(email);

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND } from '../helpers/status-code';
+import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND, STATUS_USER_EXIST } from '../helpers/status-code';
 import CustomError from '../helpers/customError';
 import Users from '../models/users';
 
@@ -53,8 +53,9 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new CustomError(`Ошибка валидации: ${err.message}`, STATUS_BAD_REQUEST));
-      } else {
-        next(err);
+      }
+      if (err.code === 11000) {
+        next(new CustomError(`Такой пользователь уже зарегистрирован: ${err.message}`, STATUS_USER_EXIST));
       }
 
       next(err);
